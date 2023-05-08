@@ -1,0 +1,3 @@
+[submodule "rails_solargraph_yard"]
+	path = rails_solargraph_yard
+	url = ./rails_solargraph_yard
