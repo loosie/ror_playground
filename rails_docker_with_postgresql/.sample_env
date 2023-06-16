@@ -1,0 +1,6 @@
+RAILS_ENV=production
+POSTGRES_HOST=db
+POSTGRES_DB=production_db
+POSTGRES_USER=user
+POSTGRES_PASSWORD=1234
+RAILS_MASTER_KEY=#{your_rails_master_key}
