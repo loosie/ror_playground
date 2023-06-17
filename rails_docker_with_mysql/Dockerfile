@@ -1,31 +1,37 @@
-FROM ruby:3.0.0-slim
-ENV LANG C.UTF-8
+ARG RUBY_VERSION=3.0.0
+FROM ruby:$RUBY_VERSION
 
-RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
-    build-essential \
-    gnupg2 \
-    less \
-    git \
-    autoconf \
-    automake \
-    libtool \
-    telnet \
-    cron \
-    nodejs \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Install libvips for Active Storage preview support
+RUN apt-get update -qq && \
+    apt-get install -y build-essential libvips bash bash-completion libffi-dev tzdata postgresql nodejs npm yarn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
 
-RUN apt-get update -qq && apt-get install -y default-libmysqlclient-dev
+# Rails app lives here
+WORKDIR /rails
+
+# Set production environment
+ENV RAILS_LOG_TO_STDOUT="1" \
+    RAILS_SERVE_STATIC_FILES="true" \
+    RAILS_ENV="production" \
+    BUNDLE_WITHOUT="development"
 
 #Cache bundle install
-WORKDIR /tmp
-ADD ./Gemfile Gemfile
-ADD ./Gemfile.lock Gemfile.lock
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
-ENV APP_ROOT /workspace
-RUN mkdir -p $APP_ROOT
-WORKDIR $APP_ROOT
-COPY . $APP_ROOT
+# Copy application code
+COPY . .
 
-EXPOSE  3000
-CMD rm -f tmp/pids/server.pid && rails s -b '0.0.0.0'
+# Precompile bootsnap code for faster boot times
+RUN bundle exec bootsnap precompile --gemfile app/ lib/
+
+# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
+
+# Entrypoint prepares the database.
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+# Start the server by default, this can be overwritten at runtime
+EXPOSE 3000
+CMD ["./bin/rails", "server"]

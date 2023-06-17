@@ -1,0 +1,5 @@
+MYSQL_HOST=db
+MYSQL_DATABASE=#{your mysql database name}
+
+LOCAL_MYSQL_USER=#{your local mysql user}
+LOCAL_MYSQL_PASSWORD=#{your local mysql password}
