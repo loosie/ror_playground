@@ -1,24 +1,115 @@
-# README
+# Rails graphql
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
+## query1
+```
+{
+  users{
+    id
+    firstName
+    lastName
+    city
+  }
+}
+```
 
-* Ruby version
+## result
+```
+User Load (0.2ms)  SELECT "users".* FROM "users"
+Post Load (0.3ms)  SELECT "posts".* FROM "posts" WHERE "posts"."user_id" IN ($1, $2)  [["user_id", 1], ["user_id", 2]]
+Comment Load (0.3ms)  SELECT "comments".* FROM "comments" WHERE "comments"."user_id" IN ($1, $2)  [["user_id", 1], ["user_id", 2]]
 
-* System dependencies
+{
+  "data": {
+    "users": [
+      {
+        "id": "1",
+        "firstName": "John",
+        "lastName": "Doe",
+        "city": "London"
+      },
+      {
+        "id": "2",
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "city": "New York"
+      }
+    ]
+  }
+}
+```
 
-* Configuration
+<br>
 
-* Database creation
+## query2
+```
+{
+  users{
+    id
+    fullName
+    city
+    posts {
+      id
+      body
+      comments {
+        id
+        body
+      }
+    }
 
-* Database initialization
+  }
+}
+```
 
-* How to run the test suite
+## result
+```
+ User Load (0.2ms)  SELECT "users".* FROM "users"
+  Post Load (0.2ms)  SELECT "posts".* FROM "posts" WHERE "posts"."user_id" IN ($1, $2)  [["user_id", 1], ["user_id", 2]]
+  Comment Load (0.2ms)  SELECT "comments".* FROM "comments" WHERE "comments"."post_id" IN ($1, $2, $3)  [["post_id", 1], ["post_id", 2], ["post_id", 3]]
 
-* Services (job queues, cache servers, search engines, etc.)
+{
+  "data": {
+    "users": [
+      {
+        "id": "1",
+        "fullName": "John Doe",
+        "city": "London",
+        "posts": [
+          {
+            "id": "1",
+            "body": "This is a post",
+            "comments": [
+              {
+                "id": "1",
+                "body": "This is a comment"
+              },
+              {
+                "id": "2",
+                "body": "This is another comment"
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "body": "This is another post",
+            "comments": []
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "fullName": "Jane Doe",
+        "city": "New York",
+        "posts": [
+          {
+            "id": "3",
+            "body": "This is yet another post",
+            "comments": []
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
-* Deployment instructions
-
-* ...
