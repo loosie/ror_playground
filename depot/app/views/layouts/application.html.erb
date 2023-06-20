@@ -11,6 +11,21 @@
   </head>
 
   <body>
+    <header class="main">
+      <%= image_tag 'logo.svg', alt: 'The Pragmatic Bookshelf' %>
+      <h1><%= @page_title %></h1>
+    </header>
+
+    <section class="content">
+      <nav class="side_nav">
+        <ul>
+          <li><a href="/"><%= t('.home') %></a></li>
+          <li><a href="/questions"><%= t('.questions') %></a></li>
+          <li><a href="/news"><%= t('.news') %></a></li>
+          <li><a href="/contact"><%= t('.contact') %></a></li>
+        </ul>
+      </nav>
+    </section>
     <main class='<%= controller.controller_name %>'>
       <%= yield %>
     </main>
