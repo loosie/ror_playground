@@ -18,6 +18,11 @@
 
     <section class="content">
       <nav class="side_nav">
+        <% if @cart %>
+          <div id="cart" class="carts">
+            <%= render_if @cart && @cart.line_items.any?, @cart %>
+          </div>
+        <% end %>
         <ul>
           <li><a href="/"><%= t('.home') %></a></li>
           <li><a href="/questions"><%= t('.questions') %></a></li>
